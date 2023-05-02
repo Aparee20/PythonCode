@@ -1,3 +1,86 @@
+
+
+
+
+import abc
+import sqlite3
+import psycopg2
+
+class DatabaseConnector(metaclass=abc.ABCMeta):
+    """Abstract base class for connecting to databases"""
+
+    @abc.abstractmethod
+    def connect(self):
+        """Connect to the database"""
+
+    @abc.abstractmethod
+    def execute(self, query):
+        """Execute a query and return the results"""
+
+class SQLiteConnector(DatabaseConnector):
+    """Class for connecting to SQLite databases"""
+
+    def __init__(self, db_file):
+        self.db_file = db_file
+
+    def connect(self):
+        self.conn = sqlite3.connect(self.db_file)
+
+    def execute(self, query):
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        return cursor.fetchall()
+
+class PostgreSQLConnector(DatabaseConnector):
+    """Class for connecting to PostgreSQL databases"""
+
+    def __init__(self, host, port, dbname, user, password):
+        self.host = host
+        self.port = port
+        self.dbname = dbname
+        self.user = user
+        self.password = password
+
+    def connect(self):
+        self.conn = psycopg2.connect(
+            host=self.host,
+            port=self.port,
+            dbname=self.dbname,
+            user=self.user,
+            password=self.password
+        )
+
+    def execute(self, query):
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        return cursor.fetchall()
+
+# Example usage
+if __name__ == '__main__':
+    # Connect to an SQLite database
+    sqlite_connector = SQLiteConnector('example.db')
+    sqlite_connector.connect()
+    results = sqlite_connector.execute('SELECT * FROM mytable')
+    print(results)
+
+    # Connect to a PostgreSQL database
+    postgresql_connector = PostgreSQLConnector(
+        host='localhost',
+        port='5432',
+        dbname='mydb',
+        user='myuser',
+        password='mypassword'
+    )
+    postgresql_connector.connect()
+    results = postgresql_connector.execute('SELECT * FROM mytable')
+    print(results)
+
+
+
+
+
+
+
 import re
 
 def extract_columns_from_create_table_script(create_table_script):
