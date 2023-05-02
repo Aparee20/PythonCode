@@ -1,3 +1,10 @@
+import re
+
+def extract_columns_from_create_table_script(create_table_script):
+    # Extract the column names and data types from the CREATE TABLE script
+    columns = re.findall(r'\((.*)\)', create_table_script)[0]
+    column_list = [col.strip() for col in columns.split(',')]
+    return column_list
 
 import csv
 import sqlite3
