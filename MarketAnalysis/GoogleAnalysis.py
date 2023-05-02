@@ -1,3 +1,29 @@
+
+import csv
+import sqlite3
+
+def insert_csv_to_sqlite(db_name, table_name, columns):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+
+    # Create the table with the specified columns
+    create_table_query = f"CREATE TABLE {table_name} ({','.join(columns)})"
+    cursor.execute(create_table_query)
+
+    # Read the CSV file and insert the data into the table
+    with open(f"{table_name}.csv", 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)  # skip the header row
+        for row in csv_reader:
+            insert_query = f"INSERT INTO {table_name} VALUES ({','.join(['?']*len(columns))})"
+            cursor.execute(insert_query, row)
+
+    conn.commit()
+    conn.close()
+
+
+
+
 from GoogleNews import GoogleNews
 from newspaper import Article
 import pandas as pd
